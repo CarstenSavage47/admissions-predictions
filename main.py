@@ -141,7 +141,7 @@ def AreWeSelective(ACT_75TH):
   output = net(t)
   return output.ge(0.5).item()
 
-# Input values between 0 and 1 to test (since it's scaled)
+# Input values between 0 and 1 to test (since it's scaled).
 AreWeSelective(ACT_75TH=0.95)
 
 # It looks like scaled ACT values around .70 and above will be
