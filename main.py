@@ -1,5 +1,6 @@
 
-# Thank you to Venelin (https://curiousily.com/about) / (https://curiousily.com/posts/build-your-first-neural-network-with-pytorch/)
+# Thank you to Venelin (https://curiousily.com/about) /
+# (https://curiousily.com/posts/build-your-first-neural-network-with-pytorch/)
 # And to StatQuest (https://www.youtube.com/watch?v=FHdlXe1bSe4)
 # For help with getting started with this neural network.
 
@@ -144,4 +145,4 @@ def AreWeSelective(ACT_75TH):
 AreWeSelective(ACT_75TH=0.95)
 
 # It looks like scaled ACT values around .70 and above will be
-# A good predictor for whether or not a school is selective based on the criteria
+# ... a good predictor for whether or not a school is selective based on the criteria.
