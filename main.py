@@ -5,7 +5,8 @@
 # For help with getting started with this neural network.
 
 # The purpose of this neural network is to predict whether a college is selective or not based on attributes.
-# The current model is using only ACT scores as a predictor for whether a college is selective.
+# The current model is using 75th percentile ACT scores, admittance rate percentages,
+# ... total enrollment, and total out-of-state price as predictors for whether a college is selective.
 
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
 import torch.nn as nn  # torch.nn allows us to create a neural network.
@@ -49,7 +50,11 @@ AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','To
 AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 65,1,0)
 AdmissionsSlim['Hist_Black'] = np.where(AdmissionsSlim['Hist_Black'] == 'Yes',1,0)
 
-X = AdmissionsSlim[['ACT_75TH']]
+X = AdmissionsSlim[['ACT_75TH',
+                    'Hist_Black',
+                    'Total_ENROLL',
+                    'Total_Price'
+                    ]]
 y = AdmissionsSlim[['Per_Admit']]
 
 # Split dataframe into training and testing data. Remember to set a seed.
@@ -133,16 +138,36 @@ for epoch in range(1000):
     optimizer.step()
     optimizer.zero_grad()
 
+
 # Creating a function to evaluate our input
-def AreWeSelective(ACT_75TH):
-  t = torch.as_tensor([ACT_75TH]) \
+def AreWeSelective(ACT_75TH,
+                   Hist_Black,
+                   Total_ENROLL,
+                   Total_Price
+                   ):
+  t = torch.as_tensor([ACT_75TH,
+                       Hist_Black,
+                       Total_ENROLL,
+                       Total_Price
+                       ]) \
     .float() \
     .to(device)
   output = net(t)
   return output.ge(0.5).item()
 
-# Input values between 0 and 1 to test (since it's scaled).
-AreWeSelective(ACT_75TH=0.95)
 
-# It looks like scaled ACT values around .70 and above will be
-# ... a good predictor for whether or not a school is selective based on the criteria.
+# Input values between 0 and 1 to test (since it's scaled).
+AreWeSelective(ACT_75TH=0.99,
+               Hist_Black=0.99,
+               Total_ENROLL=0.99,
+               Total_Price=0.99
+               )
+
+# Input values between 0 and 1 to test (since it's scaled).
+AreWeSelective(ACT_75TH=0.01,
+               Hist_Black=0.1,
+               Total_ENROLL=0.01,
+               Total_Price=0.01
+               )
+
+# It looks like out-of-state tuition is a good predictor for whether or not a school is selective based on the criteria.
