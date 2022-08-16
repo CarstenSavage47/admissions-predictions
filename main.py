@@ -7,6 +7,7 @@
 # The purpose of this neural network is to predict whether a college is selective or not based on attributes.
 # The current model is using 75th percentile ACT scores, admittance rate percentages,
 # ... total enrollment, and total out-of-state price as predictors for whether a college is selective.
+# I defined a 'selective' university as one that has an acceptance rate of less than 65%.
 
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
 import torch.nn as nn  # torch.nn allows us to create a neural network.
@@ -22,8 +23,6 @@ from matplotlib import rc
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn import preprocessing
-import rdatasets
-from rdatasets import data
 
 import pandas
 import numpy as np
@@ -134,9 +133,9 @@ for epoch in range(1000):
         print("Num steps: " + str(epoch))
         break
 
+    optimizer.zero_grad()
     train_loss.backward()
     optimizer.step()
-    optimizer.zero_grad()
 
 
 # Creating a function to evaluate our input
@@ -157,13 +156,13 @@ def AreWeSelective(ACT_75TH,
 
 
 # Input values between 0 and 1 to test (since it's scaled).
+# For example, Total_Price = 1.0 signifies the highest price in the dataset.
 AreWeSelective(ACT_75TH=0.99,
                Hist_Black=0.99,
                Total_ENROLL=0.99,
                Total_Price=0.99
                )
 
-# Input values between 0 and 1 to test (since it's scaled).
 AreWeSelective(ACT_75TH=0.01,
                Hist_Black=0.1,
                Total_ENROLL=0.01,
