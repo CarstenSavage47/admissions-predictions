@@ -6,7 +6,8 @@
 
 # The purpose of this neural network is to predict whether a college is selective or not based on attributes.
 # The current model is using 75th percentile ACT scores, admittance rate percentages,
-# ... total enrollment, and total out-of-state price as predictors for whether a college is selective.
+# ... total enrollment, total out-of-state price, percent of enrollment that is non-white,
+# ... and percent of total enrollment that is women as predictors for whether a college is selective.
 # I defined a 'selective' university as one that has an acceptance rate of less than 65%.
 
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
@@ -90,9 +91,9 @@ class Net(nn.Module):
 
   def __init__(self, n_features):
     super(Net, self).__init__()
-    self.fc1 = nn.Linear(n_features, 8)
-    self.fc2 = nn.Linear(8, 4)
-    self.fc3 = nn.Linear(4, 1)
+    self.fc1 = nn.Linear(n_features, 12)
+    self.fc2 = nn.Linear(12, 8)
+    self.fc3 = nn.Linear(8, 1)
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
@@ -178,11 +179,12 @@ AreWeSelective(ACT_75TH=0.1,
                )
 
 AreWeSelective(ACT_75TH=0.9,
-               Hist_Black=0.1,
-               Total_ENROLL=0.9,
-               Total_Price=0.9,
+               Hist_Black=0.5,
+               Total_ENROLL=0.5,
+               Total_Price=0.5,
                Per_Non_White=0.5,
                Per_Women=0.9
                )
 
-# It looks like out-of-state tuition is a good predictor for whether or not a school is selective based on the criteria.
+# It looks like 75th percentile ACT scores are a good predictor for whether or not a school is
+# ... selective based on the criteria. In the model, 75th percentile ACT scores are assigned the greatest weight.
