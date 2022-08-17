@@ -37,23 +37,31 @@ AdmissionsSlim = (Admissions
              'ACT Composite 75th percentile score',
              'Historically Black College or University',
              'Total  enrollment',
-             'Total price for out-of-state students living on campus 2013-14'])
+             'Total price for out-of-state students living on campus 2013-14',
+             'Percent of total enrollment that are White',
+             'Percent of total enrollment that are women'])
     .dropna()
 )
 
 AdmissionsSlim.columns
 
-AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','Total_Price']
+AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','Total_Price','Per_White','Per_Women']
 
 # Defining 'Selective' as an Admittance Rate Under 65%
 AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 65,1,0)
 AdmissionsSlim['Hist_Black'] = np.where(AdmissionsSlim['Hist_Black'] == 'Yes',1,0)
 
+# Create a new variable, which is the percentage of total enrollment that are non-white.
+AdmissionsSlim = (AdmissionsSlim
+    .assign(Per_Non_White=lambda a: 100-a.Per_White)
+)
+
 X = AdmissionsSlim[['ACT_75TH',
                     'Hist_Black',
                     'Total_ENROLL',
-                    'Total_Price'
-                    ]]
+                    'Total_Price',
+                    'Per_Non_White',
+                    'Per_Women']]
 y = AdmissionsSlim[['Per_Admit']]
 
 # Split dataframe into training and testing data. Remember to set a seed.
@@ -142,12 +150,16 @@ for epoch in range(1000):
 def AreWeSelective(ACT_75TH,
                    Hist_Black,
                    Total_ENROLL,
-                   Total_Price
+                   Total_Price,
+                   Per_Non_White,
+                   Per_Women
                    ):
   t = torch.as_tensor([ACT_75TH,
                        Hist_Black,
                        Total_ENROLL,
-                       Total_Price
+                       Total_Price,
+                       Per_Non_White,
+                       Per_Women
                        ]) \
     .float() \
     .to(device)
@@ -157,16 +169,20 @@ def AreWeSelective(ACT_75TH,
 
 # Input values between 0 and 1 to test (since it's scaled).
 # For example, Total_Price = 1.0 signifies the highest price in the dataset.
-AreWeSelective(ACT_75TH=0.99,
-               Hist_Black=0.99,
-               Total_ENROLL=0.99,
-               Total_Price=0.99
+AreWeSelective(ACT_75TH=0.1,
+               Hist_Black=0.1,
+               Total_ENROLL=0.1,
+               Total_Price=0.1,
+               Per_Non_White=0.1,
+               Per_Women=0.1
                )
 
-AreWeSelective(ACT_75TH=0.01,
+AreWeSelective(ACT_75TH=0.9,
                Hist_Black=0.1,
-               Total_ENROLL=0.01,
-               Total_Price=0.01
+               Total_ENROLL=0.9,
+               Total_Price=0.9,
+               Per_Non_White=0.5,
+               Per_Women=0.9
                )
 
 # It looks like out-of-state tuition is a good predictor for whether or not a school is selective based on the criteria.
