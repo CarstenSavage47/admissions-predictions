@@ -169,6 +169,7 @@ def AreWeSelective(ACT_75TH,
   return output.ge(0.5).item()
 
 
+# Try experimenting with the following functions and evaluate classification output.
 # Input values between 0 and 1 to test (since it's scaled).
 # For example, Total_Price = 1.0 signifies the highest price in the dataset.
 AreWeSelective(ACT_75TH=0.1,
@@ -189,3 +190,17 @@ AreWeSelective(ACT_75TH=0.9,
 
 # It looks like 75th percentile ACT scores are a good predictor for whether or not a school is
 # ... selective based on the criteria. In the model, 75th percentile ACT scores are assigned the greatest weight.
+
+# Define categories for our confusion matrix
+Categories = ['Not Selective','Selective']
+
+# Where y_test_pred > 0.5, we categorize it as 1, or else 0.
+y_test_dummy = np.where(y_test_pred > 0.5,1,0)
+
+# Creating a confusion matrix to visualize the results.
+# Model Evaluation Part 2
+Confusion_Matrix = confusion_matrix(y_test, y_test_dummy)
+Confusion_DF = pandas.DataFrame(Confusion_Matrix, index=Categories, columns=Categories)
+sns.heatmap(Confusion_DF, annot=True, fmt='g')
+plt.ylabel('Observed')
+plt.xlabel('Yhat')
