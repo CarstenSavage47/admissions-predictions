@@ -25,6 +25,7 @@ from matplotlib import rc
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 from sklearn import preprocessing
+from statsmodels.formula.api import ols
 
 import pandas
 import numpy as np
@@ -191,6 +192,8 @@ AreWeSelective(ACT_75TH=0.9,
 # It looks like 75th percentile ACT scores are a good predictor for whether or not a school is
 # ... selective based on the criteria. In the model, 75th percentile ACT scores are assigned the greatest weight.
 
+# Preparation for confusion matrix
+
 # Define categories for our confusion matrix
 Categories = ['Not Selective','Selective']
 
@@ -204,3 +207,47 @@ Confusion_DF = pandas.DataFrame(Confusion_Matrix, index=Categories, columns=Cate
 sns.heatmap(Confusion_DF, annot=True, fmt='g')
 plt.ylabel('Observed')
 plt.xlabel('Yhat')
+
+# Let's conduct a linear regression and evaluate the coefficients.
+
+Reg_Out = ols("Per_Admit ~ ACT_75TH + Hist_Black + Total_ENROLL + Total_Price + Per_Non_White + Per_Women",
+              data = AdmissionsSlim).fit()
+
+print(Reg_Out.summary())
+
+
+# Example regression table. We can see that increases in ACT_75TH, HIST_Black, and Per_Non_White have
+# The largest effects on PER_ADMIT.
+
+#                      coef      std err       t        P>|t|      [0.025      0.975]
+#   ---------------------------------------------------------------------------------
+#   Intercept        -0.8614      0.161     -5.342      0.000      -1.178      -0.545
+#   ACT_75TH          0.0445      0.006      6.976      0.000       0.032       0.057
+#   Hist_Black        0.0650      0.086      0.754      0.451      -0.104       0.234
+#   Total_ENROLL  -2.902e-06   1.52e-06     -1.909      0.057   -5.88e-06     8.1e-08
+#   Total_Price    -2.01e-06   1.91e-06     -1.052      0.293   -5.76e-06    1.74e-06
+#   Per_Non_White     0.0087      0.001      9.674      0.000       0.007       0.011
+#   Per_Women        -0.0009      0.001     -0.721      0.471      -0.003       0.002
+
+# Note: The p value on Hist_Black indicates that if the null hypothesis is true, and Hist_Black has no effect
+# ...on Per_Admit, the likelihood of getting the results we did is 45.1%.
+
+
+# Revisiting the functions: When ACT_75TH, Hist_Black, and Per_Non_White = 1.0,
+# ...the bound of the scaled data, function AreWeSelective outputs True.
+
+AreWeSelective(ACT_75TH=1.0,
+               Hist_Black=1.0,
+               Total_ENROLL=0.0,
+               Total_Price=0.0,
+               Per_Non_White=1.0,
+               Per_Women=0.0
+               )
+
+AreWeSelective(ACT_75TH=0.0,
+               Hist_Black=0.0,
+               Total_ENROLL=1.0,
+               Total_Price=1.0,
+               Per_Non_White=0.0,
+               Per_Women=1.0
+               )
