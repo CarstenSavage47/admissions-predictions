@@ -229,7 +229,7 @@ print(Reg_Out.summary())
 #   Per_Non_White     0.0087      0.001      9.674      0.000       0.007       0.011
 #   Per_Women        -0.0009      0.001     -0.721      0.471      -0.003       0.002
 
-# Note: The p value on Hist_Black indicates that if the null hypothesis is true, and Hist_Black has no effect
+# Note: The probability value on Hist_Black indicates that if the null hypothesis is true, and Hist_Black has no effect
 # ...on Per_Admit, the likelihood of getting the results we did is 45.1%.
 
 
