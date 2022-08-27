@@ -244,10 +244,10 @@ AreWeSelective(ACT_75TH=1.0,
                Per_Women=0.0
                )
 
-AreWeSelective(ACT_75TH=0.0,
+AreWeSelective(ACT_75TH=1.0,
                Hist_Black=0.0,
-               Total_ENROLL=1.0,
-               Total_Price=1.0,
-               Per_Non_White=0.0,
-               Per_Women=1.0
+               Total_ENROLL=0.0,
+               Total_Price=0.0,
+               Per_Non_White=0.5,
+               Per_Women=0.5
                )
