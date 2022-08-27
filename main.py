@@ -167,7 +167,7 @@ def AreWeSelective(ACT_75TH,
     .float() \
     .to(device)
   output = net(t)
-  return output.ge(0.5).item()
+  return output.ge(0.5).item(), output.item()
 
 
 # Try experimenting with the following functions and evaluate classification output.
