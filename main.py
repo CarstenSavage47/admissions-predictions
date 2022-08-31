@@ -9,7 +9,7 @@
 # ... total enrollment, total out-of-state price, percent of enrollment that is non-white,
 # ... historically black university status (dummy variable),
 # ... and percent of total enrollment that is women as predictors for whether a college is selective.
-# I defined a 'selective' university as one that has an acceptance rate of less than 65%.
+# I defined a 'selective' university as one that has an acceptance rate of less than 50%.
 
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
 import torch.nn as nn  # torch.nn allows us to create a neural network.
@@ -50,8 +50,8 @@ AdmissionsSlim.columns
 
 AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','Total_Price','Per_White','Per_Women']
 
-# Defining 'Selective' as an Admittance Rate Under 65%
-AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 65,1,0)
+# Defining 'Selective' as an Admittance Rate Under 30%
+AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 50,1,0)
 AdmissionsSlim['Hist_Black'] = np.where(AdmissionsSlim['Hist_Black'] == 'Yes',1,0)
 
 # Create a new variable, which is the percentage of total enrollment that are non-white.
@@ -68,12 +68,25 @@ X = AdmissionsSlim[['ACT_75TH',
 y = AdmissionsSlim[['Per_Admit']]
 
 # Split dataframe into training and testing data. Remember to set a seed.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47, stratify=y)
 
 # Scaling the data to be between 0 and 1
 min_max_scaler = preprocessing.MinMaxScaler()
 X_train = min_max_scaler.fit_transform(X_train)
 X_test = min_max_scaler.fit_transform(X_test)
+
+# Let's confirm that the scaling worked as intended.
+# All values should be between 0 and 1 for all variables.
+X_Stats = pandas.DataFrame(X_train)
+pandas.set_option('display.max_columns', None)
+X_Stats.describe()
+
+y_train_Stats = pandas.DataFrame(y_train)
+y_test_Stats = pandas.DataFrame(y_test)
+y_train_Stats.describe()
+y_test_Stats.describe()
+
+# We can see that the data has stratified as intended.
 
 # Turning the training and testing datasets into tensors
 X_train = torch.tensor(X_train)
@@ -93,19 +106,23 @@ class Net(nn.Module):
 
   def __init__(self, n_features):
     super(Net, self).__init__()
-    self.fc1 = nn.Linear(n_features, 12)
-    self.fc2 = nn.Linear(12, 8)
-    self.fc3 = nn.Linear(8, 1)
+    self.fc1 = nn.Linear(n_features, 16)
+    self.fc2 = nn.Linear(16, 8)
+    self.fc3 = nn.Linear(8, 4)
+    self.fc4 = nn.Linear(4, 1)
+
+# It seems that it has helped to increase the number of hidden layers and nodes per layer.
 
   def forward(self, x):
     x = F.relu(self.fc1(x))
     x = F.relu(self.fc2(x))
-    return torch.sigmoid(self.fc3(x))
+    x = F.relu(self.fc3(x))
+    return torch.sigmoid(self.fc4(x))
 net = Net(X_train.shape[1])
 
 # Loss Function
 criterion = nn.BCELoss()
-optimizer = SGD(net.parameters(), lr=000.1)  ## here we're creating an optimizer to train the neural network.
+optimizer = SGD(net.parameters(), lr=0.1)  ## here we're creating an optimizer to train the neural network.
 #This learning rate seems to be working well so far
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -183,9 +200,9 @@ AreWeSelective(ACT_75TH=0.1,
 
 AreWeSelective(ACT_75TH=0.9,
                Hist_Black=0.5,
-               Total_ENROLL=0.5,
-               Total_Price=0.5,
-               Per_Non_White=0.5,
+               Total_ENROLL=0.9,
+               Total_Price=0.9,
+               Per_Non_White=0.9,
                Per_Women=0.9
                )
 
@@ -244,10 +261,10 @@ AreWeSelective(ACT_75TH=1.0,
                Per_Women=0.0
                )
 
-AreWeSelective(ACT_75TH=1.0,
-               Hist_Black=0.0,
-               Total_ENROLL=0.0,
-               Total_Price=0.0,
+AreWeSelective(ACT_75TH=0.2,
+               Hist_Black=0.2,
+               Total_ENROLL=0.2,
+               Total_Price=0.2,
                Per_Non_White=0.5,
                Per_Women=0.5
                )
