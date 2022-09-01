@@ -122,7 +122,7 @@ net = Net(X_train.shape[1])
 
 # Loss Function
 criterion = nn.BCELoss()
-optimizer = SGD(net.parameters(), lr=0.1)  ## here we're creating an optimizer to train the neural network.
+optimizer = SGD(net.parameters(), lr=1.0)  ## here we're creating an optimizer to train the neural network.
 #This learning rate seems to be working well so far
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
