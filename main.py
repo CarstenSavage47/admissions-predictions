@@ -281,7 +281,7 @@ import numpy
 
 Accuracy_Values = []
 
-for i in range(1,50):
+for i in range(1,100):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train, y_train)
 
@@ -298,6 +298,6 @@ K_Accuracy_Pair.columns=['K','Accuracy']
 
 K_Accuracy_Pair[K_Accuracy_Pair['Accuracy']==max(K_Accuracy_Pair['Accuracy'])]
 
-# Best iteration was K = 41 and K = 47, both with Accuracy = 89.3%.
+# Best iteration was K = 41 and K = 47 and K = 51, all three with Accuracy = 89.3%.
 # This is actually slightly better than the neural network's accuracy.
 # The neural network's accuracy was 87.23%.
