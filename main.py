@@ -268,3 +268,36 @@ AreWeSelective(ACT_75TH=0.2,
                Per_Non_White=0.5,
                Per_Women=0.5
                )
+
+
+
+# Let's create a quick K-nearest neighbors model and see what we get.
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris
+import pandas
+import numpy
+
+Accuracy_Values = []
+
+for i in range(1,50):
+    knn = KNeighborsClassifier(n_neighbors=i)
+    knn.fit(X_train, y_train)
+
+# Calculate the accuracy of the model
+    if i % 2 == 0:
+    print("Iteration K =",i,"Accuracy Rate=", knn.score(X_test, y_test))
+    print(knn.score(X_test, y_test))
+    Accuracy_Values.append([i,knn.score(X_test, y_test)])
+
+K_Accuracy_Pair = pandas.DataFrame(Accuracy_Values)
+K_Accuracy_Pair.columns=['K','Accuracy']
+
+# Let's see the K value where the accuracy was best:
+
+K_Accuracy_Pair[K_Accuracy_Pair['Accuracy']==max(K_Accuracy_Pair['Accuracy'])]
+
+# Best iteration was K = 41 and K = 47, both with Accuracy = 89.3%.
+# This is actually slightly better than the neural network's accuracy.
+# The neural network's accuracy was 87.23%.
