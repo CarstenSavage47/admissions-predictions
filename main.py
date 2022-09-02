@@ -336,3 +336,4 @@ print(confusion_matrix)
 # Our k-nearest neighbors model was the most accurate, with accuracy of 89.3%.
 # The neural network's accuracy was 87.23%.
 # In contrast, our logistic regression model has an accuracy of 88.9%.
+# My XGBoost model (which is also published on Github) also has an accuracy rate of 87.23% for this dataset.
