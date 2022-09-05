@@ -50,7 +50,7 @@ AdmissionsSlim.columns
 
 AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','Total_Price','Per_White','Per_Women']
 
-# Defining 'Selective' as an Admittance Rate Under 30%
+# Defining 'Selective' as an Admittance Rate Under 50%
 AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 50,1,0)
 AdmissionsSlim['Hist_Black'] = np.where(AdmissionsSlim['Hist_Black'] == 'Yes',1,0)
 
