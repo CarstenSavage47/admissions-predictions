@@ -1,4 +1,3 @@
-
 # Thank you to Venelin (https://curiousily.com/about) /
 # (https://curiousily.com/posts/build-your-first-neural-network-with-pytorch/)
 # And to StatQuest (https://www.youtube.com/watch?v=FHdlXe1bSe4)
@@ -14,7 +13,9 @@
 import torch  # torch provides basic functions, from setting a random seed (for reproducability) to creating tensors.
 import torch.nn as nn  # torch.nn allows us to create a neural network.
 import torch.nn.functional as F  # nn.functional give us access to the activation and loss functions.
-from torch.optim import SGD  # optim contains many optimizers. Here, we're using SGD, stochastic gradient descent.
+from torch.optim import (
+    SGD,
+)  # optim contains many optimizers. Here, we're using SGD, stochastic gradient descent.
 import matplotlib.pyplot as plt  ## matplotlib allows us to draw graphs.
 import seaborn as sns  ## seaborn makes it easier to draw nice-looking graphs.
 import os
@@ -23,7 +24,10 @@ from pylab import rcParams
 import matplotlib.pyplot as plt
 from matplotlib import rc
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import (
+    confusion_matrix,
+    classification_report,
+)
 from sklearn import preprocessing
 from statsmodels.formula.api import ols
 import plotly.express as px
@@ -31,33 +35,46 @@ import plotly.express as px
 import pandas
 import numpy as np
 
-Admissions = pandas.read_excel('/Users/carstenjuliansavage/Desktop/IPEDS_data.xlsx')
-pandas.set_option('display.max_columns', None)
+Admissions = pandas.read_excel("IPEDS_data.xlsx")
+pandas.set_option("display.max_columns", None)
 
 # Filtering dataset for input and output variables only
 
-AdmissionsSlim = (Admissions
-    .filter(['Percent admitted - total',
-             'ACT Composite 75th percentile score',
-             'Historically Black College or University',
-             'Total  enrollment',
-             'Total price for out-of-state students living on campus 2013-14',
-             'Percent of total enrollment that are White',
-             'Percent of total enrollment that are women'])
-    .dropna()
-)
+AdmissionsSlim = Admissions.filter(
+    [
+        "Percent admitted - total",
+        "ACT Composite 75th percentile score",
+        "Historically Black College or University",
+        "Total  enrollment",
+        "Total price for out-of-state students living on campus 2013-14",
+        "Percent of total enrollment that are White",
+        "Percent of total enrollment that are women",
+    ]
+).dropna()
 
 AdmissionsSlim.columns
 
-AdmissionsSlim.columns = ['Per_Admit','ACT_75TH','Hist_Black','Total_ENROLL','Total_Price','Per_White','Per_Women']
+AdmissionsSlim.columns = [
+    "Per_Admit",
+    "ACT_75TH",
+    "Hist_Black",
+    "Total_ENROLL",
+    "Total_Price",
+    "Per_White",
+    "Per_Women",
+]
 
 # Defining 'Selective' as an Admittance Rate Under 50%
-AdmissionsSlim['Per_Admit'] = np.where(AdmissionsSlim['Per_Admit'] < 50,1,0)
-AdmissionsSlim['Hist_Black'] = np.where(AdmissionsSlim['Hist_Black'] == 'Yes',1,0)
+AdmissionsSlim["Per_Admit"] = np.where(
+    AdmissionsSlim["Per_Admit"] < 50, 1, 0
+)
+AdmissionsSlim["Hist_Black"] = np.where(
+    AdmissionsSlim["Hist_Black"] == "Yes", 1, 0
+)
 
 # Create a new variable, which is the percentage of total enrollment that are non-white.
-AdmissionsSlim = (AdmissionsSlim
-    .assign(Per_Non_White=lambda a: 100-a.Per_White)
+AdmissionsSlim = AdmissionsSlim.assign(
+    Per_Non_White=lambda a: 100 - a.Per_White
 )
 
 ## Exploratory Data Analysis
@@ -70,15 +87,17 @@ fig = px.imshow(corrMatrix)
 
 ## Correlation Matrix Version 2
 
-Corr_Heat = sns.heatmap(corrMatrix,
-                 cbar=True,
-                 annot=True,
-                 square=True,
-                 fmt='.2f',
-                 annot_kws={'size': 10},
-                 yticklabels=corrMatrix.columns,
-                 xticklabels=corrMatrix.columns,
-                 cmap="Spectral_r")
+Corr_Heat = sns.heatmap(
+    corrMatrix,
+    cbar=True,
+    annot=True,
+    square=True,
+    fmt=".2f",
+    annot_kws={"size": 10},
+    yticklabels=corrMatrix.columns,
+    xticklabels=corrMatrix.columns,
+    cmap="Spectral_r",
+)
 plt.show()
 
 Pair_Plot = px.scatter_matrix(AdmissionsSlim)
@@ -101,22 +120,40 @@ Pair_Plot.show()
 Kurtosis_x_Skewness = []
 
 for col in AdmissionsSlim:
-    print(f"Skewness for {col}: {AdmissionsSlim[col].skew()}")
-    print(f"Kurtosis for {col}: {AdmissionsSlim[col].kurt()}")
-    Kurtosis_x_Skewness.append({"Column":col,"Skewness":AdmissionsSlim[col].skew(),"Kurtosis":AdmissionsSlim[col].kurt()})
+    print(
+        f"Skewness for {col}: {AdmissionsSlim[col].skew()}"
+    )
+    print(
+        f"Kurtosis for {col}: {AdmissionsSlim[col].kurt()}"
+    )
+    Kurtosis_x_Skewness.append(
+        {
+            "Column": col,
+            "Skewness": AdmissionsSlim[col].skew(),
+            "Kurtosis": AdmissionsSlim[col].kurt(),
+        }
+    )
 
-Kurtosis_x_Skewness_DF = pandas.DataFrame(Kurtosis_x_Skewness)
+Kurtosis_x_Skewness_DF = pandas.DataFrame(
+    Kurtosis_x_Skewness
+)
 
-X = AdmissionsSlim[['ACT_75TH',
-                    'Hist_Black',
-                    'Total_ENROLL',
-                    'Total_Price',
-                    'Per_Non_White',
-                    'Per_Women']]
-y = AdmissionsSlim[['Per_Admit']]
+X = AdmissionsSlim[
+    [
+        "ACT_75TH",
+        "Hist_Black",
+        "Total_ENROLL",
+        "Total_Price",
+        "Per_Non_White",
+        "Per_Women",
+    ]
+]
+y = AdmissionsSlim[["Per_Admit"]]
 
 # Split dataframe into training and testing data. Remember to set a seed.
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=47, stratify=y)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=47, stratify=y
+)
 
 # Scaling the data to be between 0 and 1
 min_max_scaler = preprocessing.MinMaxScaler()
@@ -126,7 +163,7 @@ X_test = min_max_scaler.fit_transform(X_test)
 # Let's confirm that the scaling worked as intended.
 # All values should be between 0 and 1 for all variables.
 X_Stats = pandas.DataFrame(X_train)
-pandas.set_option('display.max_columns', None)
+pandas.set_option("display.max_columns", None)
 X_Stats.describe()
 
 y_train_Stats = pandas.DataFrame(y_train)
@@ -138,9 +175,13 @@ y_test_Stats.describe()
 
 # Turning the training and testing datasets into tensors
 X_train = torch.tensor(X_train)
-y_train = torch.squeeze(torch.from_numpy(y_train.to_numpy()).float())
+y_train = torch.squeeze(
+    torch.from_numpy(y_train.to_numpy()).float()
+)
 X_test = torch.tensor(X_test)
-y_test = torch.squeeze(torch.from_numpy(y_test.to_numpy()).float())
+y_test = torch.squeeze(
+    torch.from_numpy(y_test.to_numpy()).float()
+)
 print(X_train.shape, y_train.shape)
 print(X_test.shape, y_test.shape)
 
@@ -149,31 +190,37 @@ y_train = y_train.float()
 X_test = X_test.float()
 y_test = y_test.float()
 
+
 # Initializing the neural network class
 class Net(nn.Module):
+    def __init__(self, n_features):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(n_features, 16)
+        self.fc2 = nn.Linear(16, 8)
+        self.fc3 = nn.Linear(8, 4)
+        self.fc4 = nn.Linear(4, 1)
 
-  def __init__(self, n_features):
-    super(Net, self).__init__()
-    self.fc1 = nn.Linear(n_features, 16)
-    self.fc2 = nn.Linear(16, 8)
-    self.fc3 = nn.Linear(8, 4)
-    self.fc4 = nn.Linear(4, 1)
+    # It seems that it has helped to increase the number of hidden layers and nodes per layer.
 
-# It seems that it has helped to increase the number of hidden layers and nodes per layer.
+    def forward(self, x):
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        return torch.sigmoid(self.fc4(x))
 
-  def forward(self, x):
-    x = F.relu(self.fc1(x))
-    x = F.relu(self.fc2(x))
-    x = F.relu(self.fc3(x))
-    return torch.sigmoid(self.fc4(x))
+
 net = Net(X_train.shape[1])
 
 # Loss Function
 criterion = nn.BCELoss()
-optimizer = SGD(net.parameters(), lr=1.0)  ## here we're creating an optimizer to train the neural network.
-#This learning rate seems to be working well so far
+optimizer = SGD(
+    net.parameters(), lr=1.0
+)  ## here we're creating an optimizer to train the neural network.
+# This learning rate seems to be working well so far
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device(
+    "cuda:0" if torch.cuda.is_available() else "cpu"
+)
 X_train = X_train.to(device)
 y_train = y_train.to(device)
 
@@ -182,15 +229,17 @@ y_test = y_test.to(device)
 net = net.to(device)
 criterion = criterion.to(device)
 
+
 def calculate_accuracy(y_true, y_pred):
-  predicted = y_pred.ge(.5).view(-1)
-  return (y_true == predicted).sum().float() / len(y_true)
+    predicted = y_pred.ge(0.5).view(-1)
+    return (y_true == predicted).sum().float() / len(y_true)
+
 
 def round_tensor(t, decimal_places=3):
-  return round(t.item(), decimal_places)
+    return round(t.item(), decimal_places)
+
 
 for epoch in range(1000):
-
     y_pred = net(X_train)
     y_pred = torch.squeeze(y_pred)
     train_loss = criterion(y_pred, y_train)
@@ -200,11 +249,13 @@ for epoch in range(1000):
     test_loss = criterion(y_test_pred, y_test)
     test_acc = calculate_accuracy(y_test, y_test_pred)
 
-    print(f'''    Epoch {epoch}
+    print(
+        f"""    Epoch {epoch}
     Training loss: {round_tensor(train_loss)} Accuracy: {round_tensor(train_acc)}
-    Testing loss: {round_tensor(test_loss)} Accuracy: {round_tensor(test_acc)}''')
+    Testing loss: {round_tensor(test_loss)} Accuracy: {round_tensor(test_acc)}"""
+    )
 
-# If test loss is less than 0.02, then break. That result is satisfactory.
+    # If test loss is less than 0.02, then break. That result is satisfactory.
     if test_loss < 0.02:
         print("Num steps: " + str(epoch))
         break
@@ -215,44 +266,52 @@ for epoch in range(1000):
 
 
 # Creating a function to evaluate our input
-def AreWeSelective(ACT_75TH,
-                   Hist_Black,
-                   Total_ENROLL,
-                   Total_Price,
-                   Per_Non_White,
-                   Per_Women
-                   ):
-  t = torch.as_tensor([ACT_75TH,
-                       Hist_Black,
-                       Total_ENROLL,
-                       Total_Price,
-                       Per_Non_White,
-                       Per_Women
-                       ]) \
-    .float() \
-    .to(device)
-  output = net(t)
-  return output.ge(0.5).item(), output.item()
+def AreWeSelective(
+    ACT_75TH,
+    Hist_Black,
+    Total_ENROLL,
+    Total_Price,
+    Per_Non_White,
+    Per_Women,
+):
+    t = (
+        torch.as_tensor(
+            [
+                ACT_75TH,
+                Hist_Black,
+                Total_ENROLL,
+                Total_Price,
+                Per_Non_White,
+                Per_Women,
+            ]
+        )
+        .float()
+        .to(device)
+    )
+    output = net(t)
+    return output.ge(0.5).item(), output.item()
 
 
 # Try experimenting with the following functions and evaluate classification output.
 # Input values between 0 and 1 to test (since it's scaled).
 # For example, Total_Price = 1.0 signifies the highest price in the dataset.
-AreWeSelective(ACT_75TH=0.1,
-               Hist_Black=0.1,
-               Total_ENROLL=0.1,
-               Total_Price=0.1,
-               Per_Non_White=0.1,
-               Per_Women=0.1
-               )
+AreWeSelective(
+    ACT_75TH=0.1,
+    Hist_Black=0.1,
+    Total_ENROLL=0.1,
+    Total_Price=0.1,
+    Per_Non_White=0.1,
+    Per_Women=0.1,
+)
 
-AreWeSelective(ACT_75TH=0.9,
-               Hist_Black=0.5,
-               Total_ENROLL=0.9,
-               Total_Price=0.9,
-               Per_Non_White=0.9,
-               Per_Women=0.9
-               )
+AreWeSelective(
+    ACT_75TH=0.9,
+    Hist_Black=0.5,
+    Total_ENROLL=0.9,
+    Total_Price=0.9,
+    Per_Non_White=0.9,
+    Per_Women=0.9,
+)
 
 # It looks like 75th percentile ACT scores are a good predictor for whether or not a school is
 # ... selective based on the criteria. In the model, 75th percentile ACT scores are assigned the greatest weight.
@@ -260,23 +319,27 @@ AreWeSelective(ACT_75TH=0.9,
 # Preparation for confusion matrix
 
 # Define categories for our confusion matrix
-Categories = ['Not Selective','Selective']
+Categories = ["Not Selective", "Selective"]
 
 # Where y_test_pred > 0.5, we categorize it as 1, or else 0.
-y_test_dummy = np.where(y_test_pred > 0.5,1,0)
+y_test_dummy = np.where(y_test_pred > 0.5, 1, 0)
 
 # Creating a confusion matrix to visualize the results.
 # Model Evaluation Part 2
 Confusion_Matrix = confusion_matrix(y_test, y_test_dummy)
-Confusion_DF = pandas.DataFrame(Confusion_Matrix, index=Categories, columns=Categories)
-sns.heatmap(Confusion_DF, annot=True, fmt='g')
-plt.ylabel('Observed')
-plt.xlabel('Yhat')
+Confusion_DF = pandas.DataFrame(
+    Confusion_Matrix, index=Categories, columns=Categories
+)
+sns.heatmap(Confusion_DF, annot=True, fmt="g")
+plt.ylabel("Observed")
+plt.xlabel("Yhat")
 
 # Let's conduct a linear regression and evaluate the coefficients.
 
-Reg_Out = ols("Per_Admit ~ ACT_75TH + Hist_Black + Total_ENROLL + Total_Price + Per_Non_White + Per_Women",
-              data = AdmissionsSlim).fit()
+Reg_Out = ols(
+    "Per_Admit ~ ACT_75TH + Hist_Black + Total_ENROLL + Total_Price + Per_Non_White + Per_Women",
+    data=AdmissionsSlim,
+).fit()
 
 print(Reg_Out.summary())
 
@@ -301,22 +364,23 @@ print(Reg_Out.summary())
 # Revisiting the functions: When ACT_75TH, Hist_Black, and Per_Non_White = 1.0,
 # ...the bound of the scaled data, function AreWeSelective outputs True.
 
-AreWeSelective(ACT_75TH=1.0,
-               Hist_Black=1.0,
-               Total_ENROLL=0.0,
-               Total_Price=0.0,
-               Per_Non_White=1.0,
-               Per_Women=0.0
-               )
+AreWeSelective(
+    ACT_75TH=1.0,
+    Hist_Black=1.0,
+    Total_ENROLL=0.0,
+    Total_Price=0.0,
+    Per_Non_White=1.0,
+    Per_Women=0.0,
+)
 
-AreWeSelective(ACT_75TH=0.2,
-               Hist_Black=0.2,
-               Total_ENROLL=0.2,
-               Total_Price=0.2,
-               Per_Non_White=0.5,
-               Per_Women=0.5
-               )
-
+AreWeSelective(
+    ACT_75TH=0.2,
+    Hist_Black=0.2,
+    Total_ENROLL=0.2,
+    Total_Price=0.2,
+    Per_Non_White=0.5,
+    Per_Women=0.5,
+)
 
 
 # Let's create a quick K-nearest neighbors model and see what we get.
@@ -329,27 +393,36 @@ import numpy
 
 Accuracy_Values = []
 
-for i in range(1,100):
+for i in range(1, 100):
     knn = KNeighborsClassifier(n_neighbors=i)
     knn.fit(X_train, y_train)
 
-# Calculate the accuracy of the model
+    # Calculate the accuracy of the model
     if i % 2 == 0:
-    print("Iteration K =",i,"Accuracy Rate=", knn.score(X_test, y_test))
-    print(knn.score(X_test, y_test))
-    Accuracy_Values.append([i,knn.score(X_test, y_test)])
+        print(
+            "Iteration K =",
+            i,
+            "Accuracy Rate=",
+            knn.score(X_test, y_test),
+        )
+        print(knn.score(X_test, y_test))
+        Accuracy_Values.append(
+            [i, knn.score(X_test, y_test)]
+        )
 
 K_Accuracy_Pair = pandas.DataFrame(Accuracy_Values)
-K_Accuracy_Pair.columns=['K','Accuracy']
+K_Accuracy_Pair.columns = ["K", "Accuracy"]
 
 # Let's see the K value where the accuracy was best:
 
-K_Accuracy_Pair[K_Accuracy_Pair['Accuracy']==max(K_Accuracy_Pair['Accuracy'])]
+K_Accuracy_Pair[
+    K_Accuracy_Pair["Accuracy"]
+    == max(K_Accuracy_Pair["Accuracy"])
+]
 
 # Best iteration was K = 41 and K = 47 and K = 51, all three with Accuracy = 89.3%.
 # This is actually slightly better than the neural network's accuracy.
 # The neural network's accuracy was 87.23%.
-
 
 
 # Let's try comparing these results to a logistic regression model.
@@ -362,21 +435,36 @@ Logit = LogisticRegression()
 
 poly_accuracy = []
 
-polynomials = range(1,10)
+polynomials = range(1, 10)
 
 for poly_degree in polynomials:
-    poly = PolynomialFeatures(degree = poly_degree, interaction_only=False, include_bias=False)
+    poly = PolynomialFeatures(
+        degree=poly_degree,
+        interaction_only=False,
+        include_bias=False,
+    )
     X_poly = poly.fit_transform(X_train)
     X_test_poly = poly.fit_transform(X_test)
     Logit.fit(X_poly, y_train)
     y_pred = Logit.predict(X_test_poly)
-    print('Polynomial Degree:',poly_degree,'Accuracy:',round(Logit.score(X_test_poly, y_test),3))
-    poly_accuracy.append([poly_degree,round(Logit.score(X_test_poly, y_test),3)])
+    print(
+        "Polynomial Degree:",
+        poly_degree,
+        "Accuracy:",
+        round(Logit.score(X_test_poly, y_test), 3),
+    )
+    poly_accuracy.append(
+        [
+            poly_degree,
+            round(Logit.score(X_test_poly, y_test), 3),
+        ]
+    )
 
 Polynomial_Accuracy = pandas.DataFrame(poly_accuracy)
-Polynomial_Accuracy.columns = ['Polynomial','Accuracy']
+Polynomial_Accuracy.columns = ["Polynomial", "Accuracy"]
 
 from sklearn.metrics import confusion_matrix
+
 confusion_matrix = confusion_matrix(y_test, y_pred)
 print(confusion_matrix)
 
