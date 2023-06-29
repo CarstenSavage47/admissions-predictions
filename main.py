@@ -15,7 +15,7 @@ from data_preparation import (
 )
 from knn_learner import knn_learner
 from confusion_matrix import make_confusion_matrix
-
+from logistic_regression_learner import logistic_regression_learner
 
 Admissions = pandas.read_excel("IPEDS_data.xlsx")
 pandas.set_option("display.max_columns", None)
@@ -207,7 +207,9 @@ knn_learner(
     y_test=y_test,
 )
 
-# Linear regression
+
+logistic_regression_learner(x_train, y_train, x_test, y_test)
+
 
 linear_regression_output = ols(
     "Per_Admit ~ ACT_75TH + Hist_Black + Total_ENROLL + Total_Price + Per_Non_White + Per_Women",
