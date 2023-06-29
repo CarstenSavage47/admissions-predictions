@@ -4,7 +4,9 @@ from sklearn import metrics
 from sklearn.preprocessing import PolynomialFeatures
 
 
-def logistic_regression_learner(x_train, y_train, x_test, y_test):
+def logistic_regression_learner(
+    x_train, y_train, x_test, y_test
+):
     """
 
     :param x_train:
@@ -19,7 +21,9 @@ def logistic_regression_learner(x_train, y_train, x_test, y_test):
     polynomials = range(1, 10)
 
     for poly_degree in polynomials:
-        poly = PolynomialFeatures(degree=poly_degree, include_bias=False)
+        poly = PolynomialFeatures(
+            degree=poly_degree, include_bias=False
+        )
         X_poly = poly.fit_transform(x_train)
         x_test_poly = poly.fit_transform(x_test)
         Logit.fit(X_poly, y_train)

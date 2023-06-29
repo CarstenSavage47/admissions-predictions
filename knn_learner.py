@@ -44,4 +44,3 @@ def knn_learner(x_train, y_train, x_test, y_test):
     # Best iteration was K = 41 and K = 47 and K = 51, all three with Accuracy = 89.3%.
     # This is actually slightly better than the neural network's accuracy.
     # The neural network's accuracy was 87.23%.
-
