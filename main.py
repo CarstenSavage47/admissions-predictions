@@ -15,7 +15,7 @@ from data_preparation import (
 )
 from knn_learner import knn_learner
 from confusion_matrix import make_confusion_matrix
-from logistic_regression_learner import logistic_regression_learner
+
 
 Admissions = pandas.read_excel("IPEDS_data.xlsx")
 pandas.set_option("display.max_columns", None)
@@ -75,7 +75,6 @@ X = AdmissionsSlim[
 y = AdmissionsSlim[["Per_Admit"]]
 
 x_train, y_train, x_test, y_test = train_test_splitter(X, y)
-
 
 # Initializing the neural network class
 class Net(nn.Module):
@@ -163,16 +162,6 @@ def AreWeSelective(
     Per_Non_White,
     Per_Women,
 ):
-    """
-
-    :param ACT_75TH:
-    :param Hist_Black:
-    :param Total_ENROLL:
-    :param Total_Price:
-    :param Per_Non_White:
-    :param Per_Women:
-    :return:
-    """
     t = (
         torch.as_tensor(
             [
@@ -207,9 +196,7 @@ knn_learner(
     y_test=y_test,
 )
 
-
-logistic_regression_learner(x_train, y_train, x_test, y_test)
-
+# Linear regression
 
 linear_regression_output = ols(
     "Per_Admit ~ ACT_75TH + Hist_Black + Total_ENROLL + Total_Price + Per_Non_White + Per_Women",
