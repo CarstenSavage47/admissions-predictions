@@ -32,4 +32,4 @@ Evaluating skewness:
 - A value of zero indicates that there is no skewness in the distribution; it's perfectly symmetrical.
 
 
-Thank you to Venelin (https://curiousily.com/posts/build-your-first-neural-network-with-pytorch/) and StatQuest (https://www.youtube.com/watch?v=FHdlXe1bSe4) for creating fantastic guides to PyTorch.
+Thank you Venelin (https://curiousily.com/posts/build-your-first-neural-network-with-pytorch/) and StatQuest (https://www.youtube.com/watch?v=FHdlXe1bSe4) for creating fantastic guides to PyTorch.
