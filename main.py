@@ -154,23 +154,23 @@ make_confusion_matrix(y_test, y_test_pred)
 
 
 # Creating a function to evaluate our input
-def AreWeSelective(
-    ACT_75TH,
-    Hist_Black,
-    Total_ENROLL,
-    Total_Price,
-    Per_Non_White,
-    Per_Women,
+def predict_are_we_selective(
+        act_75th_score,
+        historical_black,
+        total_enrollment,
+        total_price,
+        percent_non_white,
+        percent_women,
 ):
     t = (
         torch.as_tensor(
             [
-                ACT_75TH,
-                Hist_Black,
-                Total_ENROLL,
-                Total_Price,
-                Per_Non_White,
-                Per_Women,
+                act_75th_score,
+                historical_black,
+                total_enrollment,
+                total_price,
+                percent_non_white,
+                percent_women,
             ]
         )
         .float()
@@ -180,13 +180,13 @@ def AreWeSelective(
     return output.ge(0.5).item(), output.item()
 
 
-AreWeSelective(
-    ACT_75TH=0.1,
-    Hist_Black=0.1,
-    Total_ENROLL=0.1,
-    Total_Price=0.1,
-    Per_Non_White=0.1,
-    Per_Women=0.1,
+predict_are_we_selective(
+    act_75th_score=0.1,
+    historical_black=0.1,
+    total_enrollment=0.1,
+    total_price=0.1,
+    percent_non_white=0.1,
+    percent_women=0.1,
 )
 
 knn_learner(
