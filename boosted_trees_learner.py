@@ -195,7 +195,7 @@ def create_a_test_array(
 
 
 row = create_a_test_array(
-    ACT_75TH=35, Hist_Black=1, Total_ENROLL=20000, Total_Price=70000, Per_Non_White=10, Per_Women=60
+    ACT_75TH=35, Hist_Black=1, Total_ENROLL=20000, Total_Price=70000, Per_Non_White=30, Per_Women=60
 )
 
 yhat = pipeline.predict(row)
